@@ -8,6 +8,12 @@ export default (state = defaultState,action)=>{
         newState.inputValue = action.value;
         return newState;
     }
-    console.log(state,action);
+    if(action.type=='add_list'){
+        const newState = JSON.parse(JSON.stringify(state));
+        newState.inputValue = action.value;
+        newState.list.push(newState.inputValue);
+        newState.inputValue = '';
+        return newState;
+    }
     return state;
 }
