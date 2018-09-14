@@ -1,7 +1,9 @@
 import React,{Component,Fragment} from 'react';
 import store from './store';
 import 'antd/dist/antd.css';
-import {Input,Button,List} from 'antd';
+import axios from 'axios';
+import {getAddItemAction,getInputChangeAction,getDeleteItemAction} from './store/ActionCreators';
+import TodoListUI from './TodoListUI';
 
 class TodoList extends Component{
     constructor(props){
@@ -9,14 +11,12 @@ class TodoList extends Component{
         this.state = store.getState();
         this.handleStoreChange = this.handleStoreChange.bind(this);
         this.handleBtnClick = this.handleBtnClick.bind(this);
+        this.handleInputChange = this.handleInputChange.bind(this);
         store.subscribe(this.handleStoreChange);
     }
 
     handleBtnClick(e){
-        const action = {
-            type:'add_list',
-            value:this.state.inputValue
-        }
+        const action = getAddItemAction(this.state.inputValue);
         store.dispatch(action);
     }
 
@@ -25,27 +25,29 @@ class TodoList extends Component{
     }
 
     handleInputChange(e){
-        const action = {
-            type:'change_input_value',
-            value:e.target.value
-        }
+        const action = getInputChangeAction(e.target.value);
         store.dispatch(action);
     }
+
+    handleDelete(index){
+        const action=getDeleteItemAction(index);
+        store.dispatch(action);
+    }
+
+    componentDidMount(){
+        axios.get().then(()=>{
+            
+        })
+    }
+
     render(){
-        return(
-            <Fragment>
-                <div style={{marginTop:'10px'}}>
-                    <Input placeholder="Todo info" style={{width:300}} value={this.state.inputValue} onChange={this.handleInputChange.bind(this)}/>
-                    <Button type="primary" onClick={this.handleBtnClick}>添加</Button>
-                </div>
-                <List
-                    style={{marginTop:"10px",width:'300px'}}
-                    bordered
-                    dataSource={this.state.list}
-                    renderItem={item => (<List.Item>{item}</List.Item>)}
-                    />
-            </Fragment>
-        );
+        return <TodoListUI
+            inputValue = {this.state.inputValue}
+            handleInputChange = {this.handleInputChange}
+            handleBtnClick = {this.handleBtnClick}
+            list = {this.state.list}
+            handleDelete = {this.handleDelete}
+        />;
     }
 }
 
